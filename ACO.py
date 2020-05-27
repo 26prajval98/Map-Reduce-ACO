@@ -49,9 +49,42 @@ class ACO():
 			idx = idx[0]
 			return idx
 		
-	
-	def updatePheromones(self):
-		pass
+
+	# By tejas
+	def updatePheromones(self,phernomone, times, soln):
+
+		updatep={}
+		for i in range(phernomone.shape[0]):
+			v= {}
+			for j in range(phernomone[i].shape[0]):
+				v[j]=0.0
+
+			updatep[i]=v
+
+		for k in range(len(soln)):
+			# what is Q
+			updatevalue= self.Q/times[k]
+			tour=soln[k]
+			del tour[-1]
+
+			for i in range(phernomone.shape[0]):
+				v={}
+				for j in range(phernomone[i].shape[0]):
+					if j in tour.values():
+						v[j]=updatep[i][j]+updatevalue
+
+					else:
+						v[j]=updatep[i][j]
+				updatep[i]=v
+			
+		
+		for i in range(phernomone.shape[0]):
+			x=phernomone[i]
+
+			for j in range(phernomone[i].shape[0]):
+				x[j]=(1-self.rho)*x[j]+updatep[i][j]
+			phernomone[i]=x
+
 
 
 	def globalUpdatePheromone(self):
