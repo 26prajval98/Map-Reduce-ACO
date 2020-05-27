@@ -2,7 +2,7 @@ import numpy as np
 
 class ACO():
 
-	def __init__(self, vms, tasks, itr = 2, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 5):
+	def __init__(self, vms, tasks, itr = 2, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 5, rho = 0.5, Q = 100):
 		self.vms = {}
 		self.tasks = {}
 
@@ -17,6 +17,8 @@ class ACO():
 		self.alpha = alpha
 		self.beta = beta
 		self.m = m < vms and m or vms
+		self.Q = Q
+		self.rho = rho
 
 	def ET(self, t, m):
 		return self.tasks[t]/self.vms[m]
