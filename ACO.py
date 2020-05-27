@@ -89,8 +89,16 @@ class ACO():
 
 
 
-	def globalUpdatePheromone(self):
-		pass
+	def globalUpdatePheromone(self,phernomone,mn,soln):
+		updatevalue=self.Q/mn
+
+		for i in range(len(soln)-1):
+			v= phernomone[i]
+			v[soln[i]]=v[soln[i]]+updatevalue
+			phernomone[i]=v
+
+			
+		
 
 
 	def ACO(self):
