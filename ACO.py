@@ -29,14 +29,27 @@ class ACO():
 	def chooseVM(self, et, pheromone, soln):
 		# check probability of a each machine to perform the task
 		prob = np.zeros(len(et))
-		sum = 0
+		total = 0
 
 		for machine in range(len(et)):
-			
 			if not machine in soln.values():
-				prob[machine]	
-
-
+				exec = et[machine]
+				pher = pheromone[machine]
+				prob[machine] = ((1/exec)**self.beta)*(pher**self.alpha)
+				total += prob[machine]
+			
+		prob = prob / total
+		
+		max_prob = prob.max()
+		
+		if max_prob <= 0:
+			return -1
+		else:
+			idx = np.where(np.isclose(prob, max_prob))
+			idx = idx[0]
+			return idx
+		
+	
 	def updatePheromones(self):
 		pass
 
