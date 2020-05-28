@@ -101,25 +101,25 @@ class ACO():
 		
 
 
-	def ACO(self):
+	def ACO(self,tasks):
 		
 		opt_sol = {}
 		mn_idx = 0
 
-		et = np.zeros((len(self.tasks.keys()),len(self.vms.keys())))
+		et = np.zeros((len(tasks.keys()),len(self.vms.keys())))
 
-		n = len(self.tasks.keys())
+		n = len(tasks.keys())
 
-		for i in range(len((self.tasks.keys()))):
+		for i in range(len((tasks.keys()))):
 			for j in range(len((self.vms.keys()))):
 					et[i,j] = self.ET(i,j)
 		
-		phernomone = np.full((len(self.tasks.keys()),len(self.vms.keys())), self.inital_pheromone)
+		phernomone = np.full((len(tasks.keys()),len(self.vms.keys())), self.inital_pheromone)
 
 		for i in range(self.itr):
 			# shuffle machines to assign it to ants. no of ants = no. of machines
 			soln = {}
-			machines = np.random.choice(range(len(self.tasks.keys())), self.m, replace=False)
+			machines = np.random.choice(range(len(tasks.keys())), self.m, replace=False)
 			times = []
 
 			for k in range(self.m):
@@ -128,7 +128,7 @@ class ACO():
 				soln[k][-1] =  machines[k]
 				mx = 0
 
-				for task in self.tasks:
+				for task in tasks:
 					vm = self.chooseVM(et[task], self.inital_pheromone[task], soln[k])
 					soln[k][task] = vm
 					mx = mx > et[task, vm] and mx or et[task, vm]
@@ -154,8 +154,32 @@ class ACO():
 		m = len(self.vms.keys())
 		n = len(self.tasks.keys())
 
-		while len(self.tasks.keys()):
-			if m >= n:
-				self.FCFS_OPT()
-			else:
-				self.ACO()
+		
+		# while len(self.tasks.keys()):
+		# 	if m >= n:
+		# 		self.FCFS_OPT()
+		# 	else:
+		# 		self.ACO()
+		# check if this is right
+
+		allocatedtasks={}
+
+		for i in range((int)(n/m-1)):
+			subtasks={}
+			for j in range(sel.tasks.keys()[i*(m-1):(i+1)*(m-1)])
+				subtasks[j]=self.tasks[j]
+			at=ACO(subtasks)
+
+			for j in range(len(at)):
+				allocatedtasks[j+i*(m-1)]=at[j]
+
+		subtasks={}
+		for j in range((len(self.tasks.keys())/(m-1))*(m-1),len(self.tasks.keys()))
+			subtasks[j]=self.tasks[j]
+		at= ACO(subtasks)
+
+		for j in range(len(at)):
+				allocatedtasks[j+(len(self.tasks.keys())/(m-1))*(m-1)]=at[j]
+
+		return allocatedtasks
+
