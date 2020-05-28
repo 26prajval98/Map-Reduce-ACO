@@ -360,11 +360,11 @@ def main():
 
 	args = sys.argv
 
-	if len(args) > 2:
-		option = args[2]
+	if len(args) > 1:
+		option = int(args[-1])
 	else:
 		option = 0
-
+	
 	if option == 0:
 		vms = 10
 
@@ -407,7 +407,7 @@ def main():
 		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of nodes (vms)", 
 			y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
 
-	elif option == 3:
+	elif option == 2:
 		
 		vms = generate_randoms(3, 10, 20)
 		tasks = generate_randoms(10, 30, 50)
@@ -422,12 +422,14 @@ def main():
 			else:
 				mtt[ttm[t]] = []
 				mtt[ttm[t]].append(t)
-		
-		idx, mp = make_span(mtt, vms, tasks)	
+
+		idx, mp = make_span(mtt, vms, tasks)
+		print(tasks)
+		print(vms)
 		print(mtt)
 		print(idx, mp)
 
- 	else:
+	else:
 		print("Provide argument as 0 or 1")
 
 if __name__ == "__main__":
