@@ -102,8 +102,8 @@ class ACO():
 			pheromone[i]=v
 
 
-	def ACO(self,tasks):
-		
+	def ACO(self, tasks, offset):
+		print(tasks)
 		opt_sol = {}
 		mn_idx = 0
 
@@ -120,7 +120,9 @@ class ACO():
 		for i in range(self.itr):
 			# shuffle machines to assign it to ants. no of ants = no. of machines
 			soln = {}
-			machines = np.random.choice(range(len(tasks.keys())), self.m, replace=False)
+			machines = list(range(len(self.vms.keys())))
+			random.shuffle(machines)
+
 			times = []
 
 			for k in range(self.m):
@@ -128,11 +130,11 @@ class ACO():
 				# assign no task to machine k intially
 				soln[k][-1] =  machines[k]
 				mx = 0
-
 				for task in tasks:
-					vm = self.chooseVM(et[task], pheromone[task], soln[k])
+					print(tasks, offset)
+					vm = self.chooseVM(et[task - offset], pheromone[task - offset], soln[k])
 					soln[k][task] = vm
-					mx = mx > et[task, vm] and mx or et[task, vm]
+					mx = mx > et[task - offset, vm] and mx or et[task - offset, vm]
 				
 				times.append(mx)
 			
@@ -167,9 +169,9 @@ class ACO():
 
 		for i in range((int)(n/m-1)):
 			subtasks={}
-			for j in range(self.tasks.keys()[i*(m-1):(i+1)*(m-1)]):
+			for j in list(self.tasks.keys())[i*(m-1):(i+1)*(m-1)]:
 				subtasks[j]=self.tasks[j]
-			at=ACO(subtasks)
+			at = self.ACO(subtasks, i * (m-1))
 
 			for j in range(len(at)):
 				allocatedtasks[j+i*(m-1)]=at[j]
@@ -177,18 +179,13 @@ class ACO():
 		subtasks={}
 		for j in range((len(self.tasks.keys())/(m-1))*(m-1),len(self.tasks.keys())):
 			subtasks[j]=self.tasks[j]
-		at= ACO(subtasks)
+		at = self.ACO(subtasks)
 
 		for j in range(len(at)):
 				allocatedtasks[j+(len(self.tasks.keys())/(m-1))*(m-1)]=at[j]
 
 		return allocatedtasks
 
-		# # while len(self.tasks.keys()):
-		# if m >= n:
-		# 	return self.FCFS_OPT()
-		# else:
-		# 	return self.ACO()
 
 def generate_randoms(n, i, f):
 	return random.sample(range(i, f), n)
