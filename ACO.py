@@ -275,7 +275,7 @@ def fcfs(vms, tasks):
 	fcfc = FCFS(vms, tasks)
 	mtt = fcfc.run()
 	idx, mp = make_span(mtt, vms, tasks)
-	print("FCFS: machine id %d, makespan %d"  % (idx, mp))
+	# print("FCFS: machine id %d, makespan %d"  % (idx, mp))
 	return mp
 
 
@@ -283,7 +283,7 @@ def rnd(vms, tasks):
 	random = RANDOM(vms, tasks)
 	mtt = random.run()
 	idx, mp = make_span(mtt, vms, tasks)
-	print("RANDOM: machine id %d, makespan %d"  % (idx, mp))
+	# print("RANDOM: machine id %d, makespan %d"  % (idx, mp))
 	return mp
 	
 
@@ -300,7 +300,7 @@ def aco(vms, tasks):
 			mtt[ttm[t]].append(t)
 	
 	idx, mp = make_span(mtt, vms, tasks)
-	print("ACO: machine id %d, makespan %d" % (idx, mp))
+	# print("ACO: machine id %d, makespan %d" % (idx, mp))
 	return mp
 	
 
@@ -319,7 +319,7 @@ def is_none(l, length):
 		return l
 
 
-def plt_graphs(xss, yss, labels=None, colors=None, markers=None, x_label="x - axis", y_label="y - axis"):
+def plt_graphs(xss, yss, labels=None, colors=None, markers=None, x_label="x - axis", y_label="y - axis", title="A Graph"):
 	l = len(xss)
 	assert l, len(yss)
 
@@ -329,16 +329,46 @@ def plt_graphs(xss, yss, labels=None, colors=None, markers=None, x_label="x - ax
 
 	for ll in range(l):
 		plt.plot(xss[ll], yss[ll], label=labels[ll], color=colors[ll], marker=markers[ll])
+
+	plt.xlabel(x_label)
+	plt.ylabel(y_label)
+	plt.title(title)
 	plt.legend()
 	plt.show()
 
 
+def transpose(matrix):
+    m = len(matrix)
+    n = len(matrix[0])
+    result = [[] for i in range(n)]
+    for i in range(m+1):
+        for j in range(n):
+            if i == m:
+                result[j].append(0)
+            else:
+                result[j].append(matrix[i][j])
+    return result
+
+
 def main():
-	plot = []
+
+	fcfs = []
+	rnds = []
+	aco = []
+	tsk = []
 
 	for tasks in range(10, 101, 10):
-		plot.append(execute(10, tasks))
+		ts = execute(10, tasks)
+		fcfs.append(ts[0])
+		rnds.append(ts[1])
+		aco.append(ts[2])
+		tsk.append(tasks)
 
+	makespans = [fcfs, rnds, aco]
+	counts = [tsk, tsk, tsk]
+	
+	plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
+		y_label= "Makespans", title="Makespan with 10 nodes")
 
 if __name__ == "__main__":
 	main()
