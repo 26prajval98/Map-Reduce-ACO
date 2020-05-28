@@ -269,18 +269,21 @@ def make_span(mtt, vms, tasks):
 	return max_time_machine, max_time
 
 
-def main():
-	vms = generate_randoms(10, 10, 20)
-	tasks = generate_randoms(100, 30, 50)
-
+def fcfs(vms, tasks):
 	fcfc = FCFS(vms, tasks)
 	mtt = fcfc.run()
-	print("FCFS: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
+	idx, mp = make_span(mtt, vms, tasks)
+	print("FCFS: machine id %d, makespan %d"  % (idx, mp))
 
+
+def rnd(vms, tasks):
 	random = RANDOM(vms, tasks)
 	mtt = random.run()
-	print("RANDOM: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
+	idx, mp = make_span(mtt, vms, tasks)
+	print("RANDOM: machine id %d, makespan %d"  % (idx, mp))
 
+
+def aco(vms, tasks):
 	aco = ACO(vms, tasks)
 	ttm = aco.run()
 	mtt = {}
@@ -292,7 +295,22 @@ def main():
 			mtt[ttm[t]] = []
 			mtt[ttm[t]].append(t)
 	
-	print("ACO: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
+	idx, mp = make_span(mtt, vms, tasks)
+	print("ACO: machine id %d, makespan %d" % (idx, mp))
+
+
+def execute(m, n, a=10, b=20, c=30, d=100):
+	vms = generate_randoms(m, a, b)
+	tasks = generate_randoms(n, c, d)
+
+	fcfs(vms, tasks)
+	rnd(vms, tasks)
+	aco(vms, tasks)
+
+
+def main():
+	execute(10, 100)
+
 
 if __name__ == "__main__":
 	main()
