@@ -1,6 +1,9 @@
 import numpy as np
 import random
 
+# ________________________________________________________________________________________________________________________________________________
+# Class ACO start
+
 class ACO():
 
 	def __init__(self, vms, tasks, itr = 2, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 5, rho = 0.5, Q = 100):
@@ -21,8 +24,8 @@ class ACO():
 		self.Q = Q
 		self.rho = rho
 
-	def ET(self, t, m):
-		return self.tasks[t]/self.vms[m]
+	def ET(self, t, m, offset):
+		return self.tasks[t + offset]/self.vms[m]
 
 
 	def FCFS_OPT(self):
@@ -50,12 +53,12 @@ class ACO():
 			return -1
 		else:
 			idx = np.where(np.isclose(prob, max_prob))
-			idx = idx[0]
+			idx = idx[0][0]
 			return idx
 		
 
 	# By tejas
-	def updatePheromones(self,pheromone, times, soln):
+	def updatePheromones(self, pheromone, times, soln):
 
 		updatep={}
 		for i in range(pheromone.shape[0]):
@@ -63,44 +66,38 @@ class ACO():
 			for j in range(pheromone[i].shape[0]):
 				v[j]=0.0
 
-			updatep[i]=v
+			updatep[i] = v
 		
-		for k in range(len(soln)):
-			# what is Q
+		for k in soln:
 			updatevalue= self.Q/times[k]
-			tour=soln[k]
+			tour = soln[k]
 			del tour[-1]
 
 			for i in range(pheromone.shape[0]):
-				v={}
+				v = {}
 				for j in range(pheromone[i].shape[0]):
 					if j in tour.values():
-						v[j]=updatep[i][j]+updatevalue
-
+						v[j] = updatep[i][j] + updatevalue
 					else:
-						v[j]=updatep[i][j]
-				updatep[i]=v
-			
-		
+						v[j] = updatep[i][j]
+				updatep[i] = v
+
 		for i in range(pheromone.shape[0]):
-			x=pheromone[i]
+			x = pheromone[i]
 
 			for j in range(pheromone[i].shape[0]):
 				pass
-				# print(x[j], updatep[i][j])
 				x[j]=(1-self.rho)*x[j]+updatep[i][j]
-			pheromone[i]=x
+			pheromone[i] = x
 
 
+	def globalUpdatePheromone(self, pheromone, mn, soln, offset):
+		updatevalue = self.Q/mn
 
-	def globalUpdatePheromone(self,pheromone,mn,soln, offset):
-		updatevalue=self.Q/mn
-
-		for i in range(offset, offset + len(soln.keys())-1):
-			v = pheromone[[i]]
-			print(v, soln, i)
-			v[soln[[i]]]=v[soln[[i]]]+updatevalue
-			pheromone[[i]]=v
+		for i in soln:
+			#  taskid : mid
+			v = pheromone[i - offset]
+			pheromone[i - offset, soln[i]] += updatevalue
 
 
 	def ACO(self, tasks, offset):
@@ -113,7 +110,7 @@ class ACO():
 
 		for i in range(len((tasks.keys()))):
 			for j in range(len((self.vms.keys()))):
-					et[i,j] = self.ET(i,j)
+					et[i,j] = self.ET(i,j, offset)
 		
 		pheromone = np.full((len(tasks.keys()),len(self.vms.keys())), self.inital_pheromone)
 
@@ -122,7 +119,6 @@ class ACO():
 			soln = {}
 			machines = list(range(len(self.vms.keys())))
 			random.shuffle(machines)
-
 			times = []
 
 			for k in range(self.m):
@@ -131,10 +127,11 @@ class ACO():
 				soln[k][-1] =  machines[k]
 				mx = 0
 				for task in tasks: 
-					# print(tasks, offset)
 					vm = self.chooseVM(et[task - offset], pheromone[task - offset], soln[k])
 					soln[k][task] = vm
-					mx = mx > et[task - offset, vm] and mx or et[task - offset, vm]
+					
+					# changed to max
+					mx = max(mx, et[task - offset, vm]) 
 				
 				times.append(mx)
 			
@@ -157,45 +154,145 @@ class ACO():
 		m = len(self.vms.keys())
 		n = len(self.tasks.keys())
 
-		
-		# while len(self.tasks.keys()):
-		# 	if m >= n:
-		# 		self.FCFS_OPT()
-		# 	else:
-		# 		self.ACO()
-		# check if this is right
-
 		allocatedtasks={}
 
-		for i in range((int)(n/m-1)):
+		# Changed n/m - 1
+		for i in range((int)(n/(m-1))):
 			subtasks={}
 			for j in list(self.tasks.keys())[i*(m-1):(i+1)*(m-1)]:
 				subtasks[j]=self.tasks[j]
 			at = self.ACO(subtasks, i * (m-1))
 
-			for j in range(len(at)):
-				allocatedtasks[j+i*(m-1)]=at[j]
+			for j in at:
+				allocatedtasks[j]=at[j]
 
 		subtasks={}
-		for j in range((len(self.tasks.keys())/(m-1))*(m-1),len(self.tasks.keys())):
+		for j in range((len(self.tasks.keys())//(m-1))*(m-1),len(self.tasks.keys())):
 			subtasks[j]=self.tasks[j]
-		at = self.ACO(subtasks)
 
-		for j in range(len(at)):
-				allocatedtasks[j+(len(self.tasks.keys())/(m-1))*(m-1)]=at[j]
+		if len(subtasks.keys()):
+			at = self.ACO(subtasks, (len(self.tasks.keys())//(m-1))*(m-1))
+
+			for j in at:
+				allocatedtasks[j]=at[j]
 
 		return allocatedtasks
+# ________________________________________________________________________________________________________________________________________________
+# Class ACO end
+
+# ________________________________________________________________________________________________________________________________________________
+# Class FCFS start
+
+class FCFS():
+
+	def __init__(self, vms, tasks):
+		self.vms = {}
+		self.tasks = {}
+
+		for i in range(len(vms)):
+			self.vms[i] = vms[i]
+
+		for i in range(len(tasks)):
+			self.tasks[i] = tasks[i]
+	
+
+	def run(self):
+		soln = {}
+		m = len(self.vms.keys())
+		mid = 0
+		
+		for task in self.tasks:
+			if mid in soln:
+				soln[mid].append(task)
+			else:
+				soln[mid] = [task]
+
+			mid += 1
+			mid %= m
+
+		return soln
+
+# ________________________________________________________________________________________________________________________________________________
+# Class FCFS end
+
+
+# ________________________________________________________________________________________________________________________________________________
+# Class Random start
+class RANDOM():
+
+	def __init__(self, vms, tasks):
+		self.vms = {}
+		self.tasks = {}
+
+		for i in range(len(vms)):
+			self.vms[i] = vms[i]
+
+		for i in range(len(tasks)):
+			self.tasks[i] = tasks[i]
+	
+
+	def run(self):
+		soln = {}
+		m = len(self.vms.keys())
+		
+		for task in self.tasks:
+			mid = random.choice(range(m))
+			if mid in soln:
+				soln[mid].append(task)
+			else:
+				soln[mid] = [task]
+
+		return soln
+
+# ________________________________________________________________________________________________________________________________________________
+# Class Random end
 
 
 def generate_randoms(n, i, f):
-	return random.sample(range(i, f), n)
+	return np.random.choice(list(range(i, f)), n)
+
+
+def calculate_time(mtt, vms, tasks):
+	times = {}
+	
+	for m in mtt:
+		times[m] = 0
+		for i  in range(len(mtt[m])):
+			times[m] += (tasks[mtt[m][i]]/vms[m])
+	return times
+
+
+def make_span(mtt, vms, tasks):
+	times = calculate_time(mtt, vms, tasks)
+	max_time_machine = max(times, key=times.get)
+	max_time = times[max_time_machine]
+	return max_time_machine, max_time
 
 
 def main():
-	vms = generate_randoms(3, 10, 20)
-	tasks = generate_randoms(10, 30, 50)
-	ac = ACO(vms, tasks)
-	print(ac.run())
+	vms = generate_randoms(10, 10, 20)
+	tasks = generate_randoms(100, 30, 50)
+
+	fcfc = FCFS(vms, tasks)
+	mtt = fcfc.run()
+	print("FCFS: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
+
+	random = RANDOM(vms, tasks)
+	mtt = random.run()
+	print("RANDOM: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
+
+	aco = ACO(vms, tasks)
+	ttm = aco.run()
+	mtt = {}
+	
+	for t in ttm:
+		if ttm[t] in mtt:
+			mtt[ttm[t]].append(t)
+		else:
+			mtt[ttm[t]] = []
+			mtt[ttm[t]].append(t)
+	
+	print("ACO: machine id %d, makespan %d" % make_span(mtt, vms, tasks))
 
 if __name__ == "__main__":
 	main()
