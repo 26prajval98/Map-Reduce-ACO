@@ -1,5 +1,7 @@
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+
 
 # ________________________________________________________________________________________________________________________________________________
 # Class ACO start
@@ -274,6 +276,7 @@ def fcfs(vms, tasks):
 	mtt = fcfc.run()
 	idx, mp = make_span(mtt, vms, tasks)
 	print("FCFS: machine id %d, makespan %d"  % (idx, mp))
+	return mp
 
 
 def rnd(vms, tasks):
@@ -281,7 +284,8 @@ def rnd(vms, tasks):
 	mtt = random.run()
 	idx, mp = make_span(mtt, vms, tasks)
 	print("RANDOM: machine id %d, makespan %d"  % (idx, mp))
-
+	return mp
+	
 
 def aco(vms, tasks):
 	aco = ACO(vms, tasks)
@@ -297,19 +301,43 @@ def aco(vms, tasks):
 	
 	idx, mp = make_span(mtt, vms, tasks)
 	print("ACO: machine id %d, makespan %d" % (idx, mp))
-
+	return mp
+	
 
 def execute(m, n, a=10, b=20, c=30, d=100):
 	vms = generate_randoms(m, a, b)
 	tasks = generate_randoms(n, c, d)
 
-	fcfs(vms, tasks)
-	rnd(vms, tasks)
-	aco(vms, tasks)
+	return [fcfs(vms, tasks), rnd(vms, tasks), aco(vms, tasks)]
+
+
+def is_none(l, length):
+	if l is None:
+		return [None for ii in range(length)]
+	else:
+		assert len(l), length
+		return l
+
+
+def plt_graphs(xss, yss, labels=None, colors=None, markers=None, x_label="x - axis", y_label="y - axis"):
+	l = len(xss)
+	assert l, len(yss)
+
+	labels = is_none(labels, l)
+	markers = is_none(markers, l)
+	colors = is_none(colors, l)
+
+	for ll in range(l):
+		plt.plot(xss[ll], yss[ll], label=labels[ll], color=colors[ll], marker=markers[ll])
+	plt.legend()
+	plt.show()
 
 
 def main():
-	execute(10, 100)
+	plot = []
+
+	for tasks in range(10, 101, 10):
+		plot.append(execute(10, tasks))
 
 
 if __name__ == "__main__":
