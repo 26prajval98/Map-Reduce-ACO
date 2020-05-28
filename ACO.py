@@ -357,18 +357,36 @@ def main():
 	aco = []
 	tsk = []
 
-	for tasks in range(10, 101, 10):
-		ts = execute(10, tasks)
+	# vms = 10
+
+	# for tasks in range(10, 101, 10):
+	# 	ts = execute(vms, tasks)
+	# 	fcfs.append(ts[0])
+	# 	rnds.append(ts[1])
+	# 	aco.append(ts[2])
+	# 	tsk.append(tasks)
+
+	# makespans = [fcfs, rnds, aco]
+	# counts = [tsk, tsk, tsk]
+	
+	# plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
+	# 	y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+
+	tasks = 100
+
+	for vms in range(3, 15):
+		ts = execute(vms, tasks)
 		fcfs.append(ts[0])
 		rnds.append(ts[1])
 		aco.append(ts[2])
-		tsk.append(tasks)
+		tsk.append(vms)
 
 	makespans = [fcfs, rnds, aco]
 	counts = [tsk, tsk, tsk]
 	
-	plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
-		y_label= "Makespans", title="Makespan with 10 nodes")
+	plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of nodes (vms)", 
+		y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
+
 
 if __name__ == "__main__":
 	main()
