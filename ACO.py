@@ -368,6 +368,11 @@ def main():
 
 	# makespans = [fcfs, rnds, aco]
 	# counts = [tsk, tsk, tsk]
+
+	# print(fcfs)
+	# print(rnds)
+	# print(aco)
+	# print(tsk)
 	
 	# plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
 	# 	y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
@@ -383,6 +388,11 @@ def main():
 
 	makespans = [fcfs, rnds, aco]
 	counts = [tsk, tsk, tsk]
+	
+	print(fcfs)
+	print(rnds)
+	print(aco)
+	print(tsk)
 	
 	plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of nodes (vms)", 
 		y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
