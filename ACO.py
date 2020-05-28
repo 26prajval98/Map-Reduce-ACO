@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class ACO():
 
@@ -16,7 +17,7 @@ class ACO():
 		self.inital_pheromone = inital_pheromone
 		self.alpha = alpha
 		self.beta = beta
-		self.m = m < vms and m or vms
+		self.m = m < len(vms) and m or len(vms)
 		self.Q = Q
 		self.rho = rho
 
@@ -39,11 +40,12 @@ class ACO():
 				pher = pheromone[machine]
 				prob[machine] = ((1/exec)**self.beta)*(pher**self.alpha)
 				total += prob[machine]
-			
-		prob = prob / total
+
+		if total:
+			prob = prob / total
 		
 		max_prob = prob.max()
-		
+
 		if max_prob <= 0:
 			return -1
 		else:
@@ -53,25 +55,25 @@ class ACO():
 		
 
 	# By tejas
-	def updatePheromones(self,phernomone, times, soln):
+	def updatePheromones(self,pheromone, times, soln):
 
 		updatep={}
-		for i in range(phernomone.shape[0]):
+		for i in range(pheromone.shape[0]):
 			v= {}
-			for j in range(phernomone[i].shape[0]):
+			for j in range(pheromone[i].shape[0]):
 				v[j]=0.0
 
 			updatep[i]=v
-
+		
 		for k in range(len(soln)):
 			# what is Q
 			updatevalue= self.Q/times[k]
 			tour=soln[k]
 			del tour[-1]
 
-			for i in range(phernomone.shape[0]):
+			for i in range(pheromone.shape[0]):
 				v={}
-				for j in range(phernomone[i].shape[0]):
+				for j in range(pheromone[i].shape[0]):
 					if j in tour.values():
 						v[j]=updatep[i][j]+updatevalue
 
@@ -80,25 +82,24 @@ class ACO():
 				updatep[i]=v
 			
 		
-		for i in range(phernomone.shape[0]):
-			x=phernomone[i]
+		for i in range(pheromone.shape[0]):
+			x=pheromone[i]
 
-			for j in range(phernomone[i].shape[0]):
+			for j in range(pheromone[i].shape[0]):
+				pass
+				# print(x[j], updatep[i][j])
 				x[j]=(1-self.rho)*x[j]+updatep[i][j]
-			phernomone[i]=x
+			pheromone[i]=x
 
 
 
-	def globalUpdatePheromone(self,phernomone,mn,soln):
+	def globalUpdatePheromone(self,pheromone,mn,soln):
 		updatevalue=self.Q/mn
 
 		for i in range(len(soln)-1):
-			v= phernomone[i]
+			v= pheromone[i]
 			v[soln[i]]=v[soln[i]]+updatevalue
-			phernomone[i]=v
-
-			
-		
+			pheromone[i]=v
 
 
 	def ACO(self):
@@ -114,7 +115,7 @@ class ACO():
 			for j in range(len((self.vms.keys()))):
 					et[i,j] = self.ET(i,j)
 		
-		phernomone = np.full((len(self.tasks.keys()),len(self.vms.keys())), self.inital_pheromone)
+		pheromone = np.full((len(self.tasks.keys()),len(self.vms.keys())), self.inital_pheromone)
 
 		for i in range(self.itr):
 			# shuffle machines to assign it to ants. no of ants = no. of machines
@@ -129,7 +130,7 @@ class ACO():
 				mx = 0
 
 				for task in self.tasks:
-					vm = self.chooseVM(et[task], self.inital_pheromone[task], soln[k])
+					vm = self.chooseVM(et[task], pheromone[task], soln[k])
 					soln[k][task] = vm
 					mx = mx > et[task, vm] and mx or et[task, vm]
 				
@@ -137,8 +138,8 @@ class ACO():
 			
 			mn_idx, mn = times.index(min(times)), min(times)
 
-			self.updatePheromones(phernomone, times, soln)
-			self.globalUpdatePheromone(phernomone, mn, soln[mn_idx])
+			self.updatePheromones(pheromone, times, soln)
+			self.globalUpdatePheromone(pheromone, mn, soln[mn_idx])
 		
 		opt_sol = soln[mn_idx]
 
@@ -154,8 +155,21 @@ class ACO():
 		m = len(self.vms.keys())
 		n = len(self.tasks.keys())
 
-		while len(self.tasks.keys()):
-			if m >= n:
-				self.FCFS_OPT()
-			else:
-				self.ACO()
+		# while len(self.tasks.keys()):
+		if m >= n:
+			return self.FCFS_OPT()
+		else:
+			return self.ACO()
+
+def generate_randoms(n, i, f):
+	return random.sample(range(i, f), n)
+
+
+def main():
+	vms = generate_randoms(3, 10, 20)
+	tasks = generate_randoms(10, 30, 50)
+	ac = ACO(vms, tasks)
+	print(ac.run())
+
+if __name__ == "__main__":
+	main()
