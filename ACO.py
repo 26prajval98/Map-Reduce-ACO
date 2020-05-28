@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import sys
 
 
 # ________________________________________________________________________________________________________________________________________________
@@ -357,46 +358,77 @@ def main():
 	aco = []
 	tsk = []
 
-	# vms = 10
+	args = sys.argv
 
-	# for tasks in range(10, 101, 10):
-	# 	ts = execute(vms, tasks)
-	# 	fcfs.append(ts[0])
-	# 	rnds.append(ts[1])
-	# 	aco.append(ts[2])
-	# 	tsk.append(tasks)
+	if len(args) > 2:
+		option = args[2]
+	else:
+		option = 0
 
-	# makespans = [fcfs, rnds, aco]
-	# counts = [tsk, tsk, tsk]
+	if option == 0:
+		vms = 10
 
-	# print(fcfs)
-	# print(rnds)
-	# print(aco)
-	# print(tsk)
-	
-	# plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
-	# 	y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+		for tasks in range(10, 101, 10):
+			ts = execute(vms, tasks)
+			fcfs.append(ts[0])
+			rnds.append(ts[1])
+			aco.append(ts[2])
+			tsk.append(tasks)
 
-	tasks = 100
+		makespans = [fcfs, rnds, aco]
+		counts = [tsk, tsk, tsk]
 
-	for vms in range(3, 15):
-		ts = execute(vms, tasks)
-		fcfs.append(ts[0])
-		rnds.append(ts[1])
-		aco.append(ts[2])
-		tsk.append(vms)
+		print(fcfs)
+		print(rnds)
+		print(aco)
+		print(tsk)
+		
+		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
+			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
 
-	makespans = [fcfs, rnds, aco]
-	counts = [tsk, tsk, tsk]
-	
-	print(fcfs)
-	print(rnds)
-	print(aco)
-	print(tsk)
-	
-	plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of nodes (vms)", 
-		y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
+	elif option == 1:
+		tasks = 100
 
+		for vms in range(3, 15):
+			ts = execute(vms, tasks)
+			fcfs.append(ts[0])
+			rnds.append(ts[1])
+			aco.append(ts[2])
+			tsk.append(vms)
+
+		makespans = [fcfs, rnds, aco]
+		counts = [tsk, tsk, tsk]
+		
+		print(fcfs)
+		print(rnds)
+		print(aco)
+		print(tsk)
+
+		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of nodes (vms)", 
+			y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
+
+	elif option == 3:
+		
+		vms = generate_randoms(3, 10, 20)
+		tasks = generate_randoms(10, 30, 50)
+
+		aco = ACO(vms, tasks)
+		ttm = aco.run()
+		mtt = {}
+		
+		for t in ttm:
+			if ttm[t] in mtt:
+				mtt[ttm[t]].append(t)
+			else:
+				mtt[ttm[t]] = []
+				mtt[ttm[t]].append(t)
+		
+		idx, mp = make_span(mtt, vms, tasks)	
+		print(mtt)
+		print(idx, mp)
+
+ 	else:
+		print("Provide argument as 0 or 1")
 
 if __name__ == "__main__":
 	main()
