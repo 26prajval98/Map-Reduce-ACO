@@ -166,7 +166,7 @@ class ACO():
 
 		for i in range((int)(n/m-1)):
 			subtasks={}
-			for j in range(sel.tasks.keys()[i*(m-1):(i+1)*(m-1)])
+			for j in range(self.tasks.keys()[i*(m-1):(i+1)*(m-1)]):
 				subtasks[j]=self.tasks[j]
 			at=ACO(subtasks)
 
@@ -174,7 +174,7 @@ class ACO():
 				allocatedtasks[j+i*(m-1)]=at[j]
 
 		subtasks={}
-		for j in range((len(self.tasks.keys())/(m-1))*(m-1),len(self.tasks.keys()))
+		for j in range((len(self.tasks.keys())/(m-1))*(m-1),len(self.tasks.keys())):
 			subtasks[j]=self.tasks[j]
 		at= ACO(subtasks)
 
