@@ -93,17 +93,17 @@ class ACO():
 
 
 
-	def globalUpdatePheromone(self,pheromone,mn,soln):
+	def globalUpdatePheromone(self,pheromone,mn,soln, offset):
 		updatevalue=self.Q/mn
 
-		for i in range(len(soln)-1):
-			v= pheromone[i]
-			v[soln[i]]=v[soln[i]]+updatevalue
-			pheromone[i]=v
+		for i in range(offset, offset + len(soln.keys())-1):
+			v = pheromone[[i]]
+			print(v, soln, i)
+			v[soln[[i]]]=v[soln[[i]]]+updatevalue
+			pheromone[[i]]=v
 
 
 	def ACO(self, tasks, offset):
-		print(tasks)
 		opt_sol = {}
 		mn_idx = 0
 
@@ -130,8 +130,8 @@ class ACO():
 				# assign no task to machine k intially
 				soln[k][-1] =  machines[k]
 				mx = 0
-				for task in tasks:
-					print(tasks, offset)
+				for task in tasks: 
+					# print(tasks, offset)
 					vm = self.chooseVM(et[task - offset], pheromone[task - offset], soln[k])
 					soln[k][task] = vm
 					mx = mx > et[task - offset, vm] and mx or et[task - offset, vm]
@@ -141,7 +141,7 @@ class ACO():
 			mn_idx, mn = times.index(min(times)), min(times)
 
 			self.updatePheromones(pheromone, times, soln)
-			self.globalUpdatePheromone(pheromone, mn, soln[mn_idx])
+			self.globalUpdatePheromone(pheromone, mn, soln[mn_idx], offset)
 		
 		opt_sol = soln[mn_idx]
 
