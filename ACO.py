@@ -527,7 +527,7 @@ def main():
 		print(tsk)
 
 		plt_graphs(counts, makespans, labels=["ACO", "ACO Multiobjective"], colors=["g", "r"], markers=['o', '^'], x_label="Number of tasks", 
-			y_label= "Makespans", title="Makespan +with %d machines (vms)"%(num_mach))
+			y_label= "Makespans", title="Makespan with %d machines (vms)"%(num_mach))
 
 	elif option == 5:
 		
