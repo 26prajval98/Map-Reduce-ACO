@@ -9,7 +9,7 @@ import sys
 
 class ACO():
 
-	def __init__(self, vms, tasks, itr = 2, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 5, rho = 0.5, Q = 100):
+	def __init__(self, vms, tasks, itr = 10, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 1, rho = 0.5, Q = 100):
 		self.vms = {}
 		self.tasks = {}
 
@@ -409,8 +409,10 @@ def main():
 
 	elif option == 2:
 		
-		vms = generate_randoms(3, 10, 20)
-		tasks = generate_randoms(10, 30, 50)
+		num_mach=5
+		num_tasks=30
+		vms = generate_randoms(num_mach, 10, 20)
+		tasks = generate_randoms(num_tasks, 30, 50)
 
 		aco = ACO(vms, tasks)
 		ttm = aco.run()
@@ -428,6 +430,21 @@ def main():
 		print(vms)
 		print(mtt)
 		print(idx, mp)
+
+		mach_=list(range(num_mach))
+		num_of_tasks=[]
+		for _ in mach_:
+			if _ in mtt.keys():
+				num_of_tasks.append(len(mtt[_]))
+			else:
+				num_of_tasks.append(0)
+
+		plt.bar(mach_,num_of_tasks)
+		plt.xlabel('Machine ID')
+		plt.ylabel('Number of tasks mapped')
+		plt.title('Distribution of tasks')
+		# plt.legend()
+		plt.show()
 
 	else:
 		print("Provide argument as 0 or 1")
