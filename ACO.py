@@ -375,6 +375,14 @@ def plt_graphs(xss, yss, labels=None, colors=None, markers=None, x_label="x - ax
 	plt.show()
 
 
+def doACO(vms, tasks):
+	return aco(vms, tasks)
+
+
+def doMultiObjACO(vms, tasks):
+	return aco(vms, tasks)
+
+
 def transpose(matrix):
     m = len(matrix)
     n = len(matrix[0])
@@ -388,13 +396,13 @@ def transpose(matrix):
     return result
 
 
+def arr_reduced(arr):
+	for i in range(len(arr)):
+		arr[i] = sum(arr[i])
+	return arr
+
+
 def main():
-
-	fcfs = []
-	rnds = []
-	aco = []
-	tsk = []
-
 	args = sys.argv
 
 	if len(args) > 1:
@@ -402,6 +410,12 @@ def main():
 	else:
 		option = 0
 	
+	fcfs = []
+	rnds = []
+	aco = []
+	tsk = []
+	aco_muti = []
+
 	if option == 0:
 		vms = 10
 
@@ -415,10 +429,10 @@ def main():
 		makespans = [fcfs, rnds, aco]
 		counts = [tsk, tsk, tsk]
 
-		# print(fcfs)
-		# print(rnds)
-		# print(aco)
-		# print(tsk)
+		print(fcfs)
+		print(rnds)
+		print(aco)
+		print(tsk)
 		
 		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
 			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
@@ -450,8 +464,6 @@ def main():
 			params = multiobjective(num_mach, tsks)
 			vms = params[0]
 			tasks = params[1]
-			ts = execute_from_data(vms, tasks)
-			fcfs.append(ts[0])
 			rnds.append(ts[1])
 			aco.append(ts[2])
 			tsk.append(tsks)
@@ -495,6 +507,29 @@ def main():
 			y_label= "Makespans", title="Makespan with %d nodes (tasks)"%(tasks))
 
 	elif option == 4:
+		num_mach = 10
+		for tsks in range(10, 101, 25):
+			params = multiobjective(num_mach, tsks)
+			vms = params[0]
+			tasks = params[1]
+			tasks_aco = arr_reduced(params[2])
+			aco.append(doACO(vms, tasks_aco))
+			aco_muti.append(doMultiObjACO(vms, tasks))
+			tsk.append(tsks)
+		
+		print("Done")
+
+		makespans = [aco, aco_muti]
+		counts = [tsk, tsk]
+
+		print(aco)
+		print(aco_muti)
+		print(tsk)
+
+		plt_graphs(counts, makespans, labels=["ACO", "ACO Multiobjective"], colors=["g", "r"], markers=['o', '^'], x_label="Number of tasks", 
+			y_label= "Makespans", title="Makespan +with %d machines (vms)"%(num_mach))
+
+	elif option == 5:
 		
 		num_mach=5
 		num_tasks=30
