@@ -9,7 +9,7 @@ import sys
 
 class ACO():
 
-	def __init__(self, vms, tasks, itr = 10, m = 10, inital_pheromone = 0.5, alpha = 1, beta = 1, rho = 0.5, Q = 100):
+	def __init__(self, vms, tasks, itr = 10, m = 10, inital_pheromone = 0.5, alpha = 2, beta = 2, rho = 0.7, Q = 100):
 		self.vms = {}
 		self.tasks = {}
 
