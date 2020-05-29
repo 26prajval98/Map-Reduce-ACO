@@ -305,10 +305,47 @@ def aco(vms, tasks):
 	return mp
 	
 
+def generate_random_array(size, a=30, b=100):
+	return random.sample(range(a, b), size)
+
+
+def multiobjective(m, n):
+	vms = generate_randoms(m, 10, 20)
+	tasks_multi_obj = []
+	tasks_with_multi = []
+
+	for i in range(n):
+		tasks_multi_obj.append(generate_random_array(random.randint(1, 11)))
+		tasks_with_multi.append([*tasks_multi_obj[-1]])
+	
+	indices = [-m  for i in range(n)]
+	
+	tasks = []
+	
+	i = 0
+	while len(tasks_multi_obj):
+		i %= len(tasks_multi_obj)
+		next_idx = len(tasks)
+		if next_idx - indices[i] < m:
+			tasks.append(0)
+		else:
+			tasks.append(tasks_multi_obj[i][0])
+			indices[i] = len(tasks) - 1
+			del tasks_multi_obj[i][0]
+			if len(tasks_multi_obj[i]) == 0:
+				del tasks_multi_obj[i]
+				del indices[i]
+				i-=1
+			i += 1
+	
+	return vms, tasks, tasks_with_multi
+
 def execute(m, n, a=10, b=20, c=30, d=100):
 	vms = generate_randoms(m, a, b)
 	tasks = generate_randoms(n, c, d)
+	return execute_from_data(vms, tasks)
 
+def execute_from_data(vms, tasks):
 	return [fcfs(vms, tasks), rnd(vms, tasks), aco(vms, tasks)]
 
 
@@ -378,10 +415,10 @@ def main():
 		makespans = [fcfs, rnds, aco]
 		counts = [tsk, tsk, tsk]
 
-		print(fcfs)
-		print(rnds)
-		print(aco)
-		print(tsk)
+		# print(fcfs)
+		# print(rnds)
+		# print(aco)
+		# print(tsk)
 		
 		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
 			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
@@ -408,6 +445,52 @@ def main():
 			y_label= "Makespans", title="Makespan with %d tasks"%(tasks))
 
 	elif option == 2:
+		num_mach = 10
+		for tsks in range(10, 101, 10):
+			params = multiobjective(num_mach, tsks)
+			vms = params[0]
+			tasks = params[1]
+			ts = execute_from_data(vms, tasks)
+			fcfs.append(ts[0])
+			rnds.append(ts[1])
+			aco.append(ts[2])
+			tsk.append(tasks)
+
+		makespans = [fcfs, rnds, aco]
+		counts = [tsk, tsk, tsk]
+
+		print(fcfs)
+		print(rnds)
+		print(aco)
+		print(tsk)
+		
+		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
+			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+
+	elif option == 3:
+		num_tasks = 100
+		for vmns in range(3, 15):
+			params = multiobjective(vmns, num_tasks)
+			vms = params[0]
+			tasks = params[1]
+			ts = execute_from_data(vms, tasks)
+			fcfs.append(ts[0])
+			rnds.append(ts[1])
+			aco.append(ts[2])
+			tsk.append(tasks)
+
+		makespans = [fcfs, rnds, aco]
+		counts = [tsk, tsk, tsk]
+
+		print(fcfs)
+		print(rnds)
+		print(aco)
+		print(tsk)
+		
+		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
+			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+
+	elif option == 4:
 		
 		num_mach=5
 		num_tasks=30
@@ -446,6 +529,7 @@ def main():
 		# plt.legend()
 		plt.show()
 
+	
 	else:
 		print("Provide argument as 0 or 1")
 
