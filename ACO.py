@@ -327,7 +327,7 @@ def multiobjective(m, n):
 		i %= len(tasks_multi_obj)
 		next_idx = len(tasks)
 		if next_idx - indices[i] < m:
-			tasks.append(0)
+			tasks.append(random.uniform(0, 0.1))
 		else:
 			tasks.append(tasks_multi_obj[i][0])
 			indices[i] = len(tasks) - 1
@@ -446,7 +446,7 @@ def main():
 
 	elif option == 2:
 		num_mach = 10
-		for tsks in range(10, 101, 10):
+		for tsks in range(10, 101, 25):
 			params = multiobjective(num_mach, tsks)
 			vms = params[0]
 			tasks = params[1]
@@ -454,8 +454,9 @@ def main():
 			fcfs.append(ts[0])
 			rnds.append(ts[1])
 			aco.append(ts[2])
-			tsk.append(tasks)
+			tsk.append(tsks)
 
+		print("Done")
 		makespans = [fcfs, rnds, aco]
 		counts = [tsk, tsk, tsk]
 
@@ -465,11 +466,12 @@ def main():
 		print(tsk)
 		
 		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
-			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(num_mach))
 
 	elif option == 3:
 		num_tasks = 100
-		for vmns in range(3, 15):
+
+		for vmns in range(5, 12):
 			params = multiobjective(vmns, num_tasks)
 			vms = params[0]
 			tasks = params[1]
@@ -477,7 +479,9 @@ def main():
 			fcfs.append(ts[0])
 			rnds.append(ts[1])
 			aco.append(ts[2])
-			tsk.append(tasks)
+			tsk.append(vmns)
+		
+		print("Done")
 
 		makespans = [fcfs, rnds, aco]
 		counts = [tsk, tsk, tsk]
@@ -488,7 +492,7 @@ def main():
 		print(tsk)
 		
 		plt_graphs(counts, makespans, labels=["FCFS", "RANDOM", "ACO"], colors=["b", "g", "r"], markers=['.', 'o', '^'], x_label="Number of tasks", 
-			y_label= "Makespans", title="Makespan with %d nodes (vms)"%(vms))
+			y_label= "Makespans", title="Makespan with %d nodes (tasks)"%(tasks))
 
 	elif option == 4:
 		
