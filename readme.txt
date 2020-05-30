@@ -14,5 +14,5 @@ if:
 	number of vms = 10
 4. arg is 3 : MO-ACO, MO-FCFS and MO-Random algorithm will run and the result against them will be plotted for varying vms given
 	number of tasks = 100
-5. arg is 4 : ACO vs MO-ACO for number of tasks = 100 and vms = 10
+5. arg is 4 : ACO vs MO-ACO for number of vms = 10 and varying tasks
 6. arg is 5 the lack of load balancing property is shown
