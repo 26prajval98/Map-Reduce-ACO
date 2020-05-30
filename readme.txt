@@ -1,6 +1,6 @@
 To run the file do the following:
 
-python ACO.py [arg]
+>>>python ACO.py [arg]
 
 arg is the value which decides what experiment to run
 
